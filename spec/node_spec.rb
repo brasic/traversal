@@ -1,6 +1,8 @@
-require File.join(File.dirname(__FILE__), '../lib/node')
+require 'spec_helper'
 
 describe Node do
+  before { Node.send :include, BuilderDSL }
+
   describe '#count_descendants' do
     context 'on a terminal node' do
       subject { Node.new }
@@ -25,20 +27,18 @@ describe Node do
 
     context 'with a complex tree' do
       subject {
-        Node.new(
-          Node.new(
-            Node.new(nil,
-              Node.new(nil,
-                Node.new
-              )
-            ),
-            Node.new(Node.new,
-              Node.new(
-                Node.new
-              )
-            )
-          )
-        )
+        Node.build {
+          node
+          node {
+            node
+            node {
+              node
+            }
+            node
+          }
+          node
+          node
+        }
       }
       it 'counts correctly' do
         expect(subject.count_descendants).to eq(8)
