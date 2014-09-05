@@ -9,6 +9,8 @@ class Node
   def count_descendants
     return 0 if leaf?
     all_children.size + extended_family_size
+  rescue SystemStackError => e
+    fail CircularDependencyDetected, e
   end
 
   protected
@@ -33,4 +35,6 @@ class Node
   def extended_family_size
     all_children.map(&:count_descendants).inject(:+)
   end
+
+  class CircularDependencyDetected < RuntimeError; end
 end
